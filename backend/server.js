@@ -3,33 +3,40 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import financialRoutes from "./routes/financialRoutes.js";
+import path from "path"; // Ensure you have imported the path module
+import { fileURLToPath } from "url";
 
-// Load environment variables from .env file
 dotenv.config();
 
-// create an instance of express
 const app = express();
-
-// define a port to run the server on
 const PORT = process.env.PORT || 5000;
 
-// middleware config
-app.use(cors()); // enable all cors requests
-app.use(express.json()); // parse json bodies as sent by API clients
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// connect to MONGODB using connection string in environment var
+app.use(cors());
+app.use(express.json()); // To parse JSON bodies
+
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("Database connection established."))
-  .catch((err) => console.error("MONGO connection error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-// routes setup
+// API routes
 app.use("/api/financial", financialRoutes);
 
-// start the server and listen on the defined PORT
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+// The "catchall" handler: for any request that does not match the above, send back React's index.html file.
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
+
 app.listen(PORT, () => {
-  console.log(`server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
