@@ -5,6 +5,25 @@ import Category from "../models/Category.js";
 // Create a router object from Express
 const router = express.Router();
 
+// Helper function to map month numbers to names
+const getMonthName = (index) => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  return months[index];
+};
+
 // GET endpoint to fetch all categories with the total amount spent in each for the current month
 router.get("/categories/monthly-totals", async (req, res) => {
   const currentDate = new Date();
@@ -116,6 +135,45 @@ router.post("/add-expense", async (req, res) => {
   }
 });
 
+// GET endpoint to fetch the total of all expenses for the current month
+router.get("/expenses/total-current-month", async (req, res) => {
+  const currentDate = new Date();
+  const firstDayOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  const lastDayOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  );
+
+  try {
+    const result = await Expense.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: firstDayOfMonth,
+            $lte: lastDayOfMonth,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null, // Grouping without any specific condition
+          totalAmount: { $sum: "$amount" }, // Summing up the 'amount' field
+        },
+      },
+    ]);
+
+    // Send the total amount as the response, defaulting to 0 if no expenses are found
+    res.json({ total: result.length > 0 ? result[0].totalAmount : 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST endpoint to add a new category
 router.post("/add-category", async (req, res) => {
   const { name, icon } = req.body;
@@ -136,6 +194,93 @@ router.post("/add-category", async (req, res) => {
     const newCategory = new Category({ name, icon });
     await newCategory.save();
     res.status(201).json(newCategory);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint to update a category by ID
+router.put("/categories/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, icon } = req.body;
+
+  try {
+    // Find the category by ID and update it
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { name, icon },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCategory) {
+      return res.status(404).send({ message: "Category not found" });
+    }
+
+    res.status(200).json(updatedCategory);
+  } catch (error) {
+    // If there's an error in the request (e.g., validation error)
+    res.status(400).send({ message: error.message });
+  }
+});
+
+// DELETE endpoint to remove all expenses
+router.delete("/expenses", async (req, res) => {
+  try {
+    // Delete all documents from the Expense collection
+    const result = await Expense.deleteMany({});
+    res.status(200).json({
+      message: "All expenses have been deleted",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint to fetch monthly totals for the current month and the previous three months, including zeros for no expenses
+router.get("/expenses/monthly-totals", async (req, res) => {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // zero-based index
+
+  const results = [];
+
+  try {
+    // Loop to cover the current month and the previous three months
+    for (let i = 0; i < 4; i++) {
+      const month = (currentMonth - i + 12) % 12;
+      const year = month > currentMonth ? currentYear - 1 : currentYear;
+
+      const totalAmount = await Expense.aggregate([
+        {
+          $match: {
+            date: {
+              $gte: new Date(year, month, 1),
+              $lt: new Date(
+                month === 11 ? year + 1 : year,
+                (month + 1) % 12,
+                1
+              ),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" },
+          },
+        },
+      ]);
+
+      results.push({
+        month: getMonthName(month),
+        total: totalAmount.length > 0 ? totalAmount[0].totalAmount : 0,
+      });
+    }
+
+    results.reverse(); // Reverse to show the months in chronological order
+
+    res.json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

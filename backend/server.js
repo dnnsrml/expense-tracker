@@ -27,7 +27,7 @@ mongoose
   .catch((err) => console.error("MONGO connection error:", err));
 
 // routes setup
-app.use("/", financialRoutes);
+app.use("/api/financial", financialRoutes);
 
 // start the server and listen on the defined PORT
 app.listen(PORT, () => {
