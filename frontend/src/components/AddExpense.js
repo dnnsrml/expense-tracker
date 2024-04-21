@@ -51,6 +51,7 @@ const AddExpense = ({ confirm, setConfirm, step, setStep, onClose }) => {
 
   useEffect(() => {
     if (step === 0) {
+      console.log(`${process.env.REACT_APP_API_URL}/api/financial/categories`);
       fetch(`${process.env.REACT_APP_API_URL}/api/financial/categories`)
         .then((res) => res.json())
         .then((data) => setCategories(data))
