@@ -1,0 +1,321 @@
+/* Define your color schemes as CSS variables */
+:root {
+  --background-color: #ffffff; /* Default background for light mode */
+  --alt-background-color: #cccccc;
+  --text-color: #333333; /* Default text color for light mode */
+  --alt-text-color: #333333;
+  --container-background-color: #cccccc; /* Additional variable for the container */
+  --container-text-color: #333333; /* Additional variable for container text */
+  --container-width: 100%;
+}
+
+/* Breakpoint for devices (typically desktops) at least 992px wide */
+@media (min-width: 992px) {
+  :root {
+    --container-width: 500px;
+  }
+}
+
+/* Apply the light theme by default */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Fonts */
+body {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+/* Style for the main container */
+.main-container {
+  width: var(--container-width); /* Width as specified */
+  margin: 0 auto; /* Centering */
+  box-sizing: border-box; /* Include padding and border in width */
+  background-color: var(
+    --container-background-color
+  ); /* Background color variable */
+  position: relative; /* For absolute positioning of the footer */
+  min-height: 100vh; /* Minimum height to take full viewport height */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+}
+
+/* Style for the header */
+.header {
+  display: flex; /* Using Flexbox */
+  flex-direction: row; /* Stack children vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: space-between; /* Distribute space around items */
+  padding: 20px; /* Padding around the header */
+  z-index: 200;
+  position: fixed; /* Fix position relative to the viewport */
+  top: 0; /* Align to the top of the viewport */
+  left: 50%; /* Center align the header */
+  width: var(--container-width); /* Match the width of the main container */
+  height: 50px;
+  transform: translateX(-50%); /* Offset by half the width to truly center it */
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--background-color);
+}
+
+.main-display {
+  display: flex; /* Using Flexbox */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: space-between; /* Distribute space around items */
+  padding: 20px; /* Padding around the header */
+  border-bottom: 1px solid var(--background-color);
+}
+
+.display-area {
+  margin: 100px 0 50px 0;
+}
+
+.monthly-amount {
+  font-size: 3rem;
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 0, 0, 0.7);
+}
+
+.display-label {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.display-date {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0 0 10px 0;
+}
+
+.text-link {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 50px;
+}
+
+/* Footer.css */
+.footer {
+  position: fixed;
+  left: 50%; /* Center the footer */
+  bottom: 0;
+  width: var(--container-width);
+  transform: translateX(
+    -50%
+  ); /* Adjusts the position to truly center based on the footer's width */
+  display: flex;
+  justify-content: space-between; /* This will place the divs at the start, middle, and end of the footer */
+  padding: 5px 10px;
+  background-color: var(
+    --container-background-color
+  ); /* Background color variable */
+  color: var(--text-color);
+  text-align: center;
+  box-sizing: border-box;
+  border-top: 1px solid var(--background-color);
+  z-index: 200;
+}
+
+.footer-item {
+  flex: 1; /* Each div will take equal width */
+  display: flex;
+  justify-content: center; /* Center content by default */
+  align-items: center; /* Align text vertically */
+}
+
+.footer-link {
+  font-size: 1.2em;
+  padding: 10px 10px;
+  cursor: pointer;
+}
+
+.footer-item.left {
+  justify-content: flex-start; /* Aligns content to the left */
+}
+
+.footer-item.center {
+  justify-content: center; /* Keeps content centered */
+}
+
+.footer-item.right {
+  justify-content: flex-end; /* Aligns content to the right */
+}
+
+.circle {
+  width: 20px; /* Set the width of the circle */
+  height: 20px; /* Set the height of the circle */
+  background-color: var(
+    --alt-background-color
+  ); /* Set the background color of the circle */
+  color: var(--alt-text-color);
+  border-radius: 50%; /* Make the shape a circle */
+  font-size: 20px; /* Set the size of the plus sign */
+  line-height: 50px; /* Align the plus sign vertically */
+  text-align: center; /* Align the plus sign horizontally */
+  display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  margin: 0;
+}
+
+.expense-modal {
+  position: fixed;
+  left: 50%; /* Center horizontally in the viewport */
+  bottom: -100%; /* Initially hidden below the viewport */
+  width: var(--container-width); /* Same width as main container */
+  transform: translateX(-50%); /* Centering the modal horizontally */
+  background-color: white; /* Modal background color */
+  transition: bottom 0.5s ease-in-out; /* Smooth slide up transition */
+  box-sizing: border-box; /* Including padding and borders in the width calculation */
+  z-index: 100; /* Ensure it's above all other content */
+  display: flex;
+  justify-content: center; /* Center content horizontally inside the modal */
+  align-items: center; /* Center content vertically inside the modal */
+  min-height: 100vh; /* Cover the full viewport height */
+  border: 1px solid var(--background-color); /* Optional: Matching border to main-container */
+}
+
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Start the alignment from the bottom */
+  visibility: hidden; /* Hide by default */
+  opacity: 0; /* Make it fully transparent */
+  transition: visibility 0s 0.3s, opacity 0.3s linear; /* Control visibility delay to sync with slide */
+}
+
+.modal-content {
+  width: var(--container-width);
+  height: 100%;
+  background: var(--container-background-color);
+  color: var(--container-text-color);
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transform: translateY(100%); /* Start below the view */
+  transition: transform 0.3s ease-out; /* Smooth transition for sliding up */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Additional CSS for when the modal is visible */
+.modal-visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s linear; /* Immediate visibility when active */
+}
+
+.modal-visible .modal-content {
+  transform: translateY(0); /* Slide up to align with the bottom */
+}
+
+.category-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Align items at the start of the flex line */
+  align-items: center;
+  text-align: center;
+  z-index: 1000;
+}
+
+.category-item {
+  flex: 0 0 33.33%;
+  box-sizing: border-box; /* Includes padding and border in the element's width */
+  padding: 10px 10px 20px 10px; /* Optional for some spacing around items */
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.category-icon {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+/* Breakpoint for devices (typically desktops) at least 992px wide */
+@media (min-width: 992px) {
+  .category-item {
+    flex: 0 0 20%; /* Each item takes up 25% of the container's width */
+    max-width: 20%;
+    margin: 10px;
+    padding: 10px; /* Optional for some spacing around items */
+  }
+}
+
+.cancel-button-div {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.breakdowns {
+  padding: 30px 20px 80px 20px; /* Optional: adds some padding inside the container */
+}
+
+.breakdowns-row {
+  display: flex;
+  justify-content: space-between; /* Ensures the category info and total amount are on opposite ends */
+  align-items: center; /* Vertically aligns the contents */
+  margin-bottom: 10px; /* Adds space between rows */
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1; /* Allows this section to take up more space if available */
+}
+
+.icon-container {
+  width: 1em; /* Fixed width for the icon container */
+  display: flex;
+  justify-content: center; /* Aligns the icon to the left */
+  align-items: center; /* Center the icon vertically */
+}
+
+.category-name {
+  margin-left: 20px; /* Space between the icon and the category name */
+  font-weight: 500;
+}
+
+.total-amount {
+  flex-shrink: 0; /* Prevents the amount from shrinking */
+  text-align: right; /* Aligns the amount text to the right */
+  font-weight: 500;
+}
+
+.graph-container {
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center; /* Align items at the start of the flex line */
+  align-items: center;
+  text-align: center;
+}
+
+.changelog-container {
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.changelog-title {
+  font-weight: bold;
+}
+
+/* SOME STYLES */
+.bold-text {
+  font-weight: bold;
+}
